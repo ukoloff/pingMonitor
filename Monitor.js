@@ -14,7 +14,11 @@ var $={};
 $.doc=newDoc();
 startPage();
 
+openLog();
+
 while(!$.closed) WScript.Sleep(100);
+
+closeLog()
 
 //--[Functions]
 
@@ -97,6 +101,38 @@ function readSnippet(name)
  }
  f.Close();
  return R;
+}
+
+function openLog()
+{
+ var F=new ActiveXObject("Scripting.FileSystemObject");
+ $.Log=F.OpenTextFile(F.GetParentFolderName(WScript.ScriptFullName)+'/'+
+	F.GetBaseName(WScript.ScriptFullName)+'.log',
+	8, /* ForAppending */
+	true);
+ $.Log.WriteLine(new Date().N14()+'\tStarted: '+WScript.ScriptFullName);
+}
+
+function closeLog()
+{
+ $.Log.WriteLine(new Date().N14()+'\tStopped: '+WScript.ScriptFullName);
+}
+
+function Number.prototype.N2()
+{
+ var N=''+this;
+ while(N.length<2)N='0'+N;
+ return N;
+}
+
+function Date.prototype.N14()
+{
+ return ''+this.getFullYear()+'-'+
+    (this.getMonth()+1).N2()+'-'+
+    this.getDate().N2()+'T'+
+    this.getHours().N2()+':'+
+    this.getMinutes().N2()+':'+
+    this.getSeconds().N2();
 }
 
 //--[Snippets]
