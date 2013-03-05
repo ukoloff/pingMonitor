@@ -14,6 +14,8 @@ var $={};
 $.doc=newDoc();
 startPage();
 
+while(!$.closed) WScript.Sleep(100);
+
 //--[Functions]
 
 // Перезапуститься в wscript (убрать консоль)
@@ -62,6 +64,18 @@ function startPage()
  $.window=$.doc.parentWindow;
  $.doc.body.onunload=function(){ $.closed=1; }
  $.interior=$.doc.getElementById('Interior');
+ insertHosts();
+}
+
+function insertHosts()
+{
+ for(var i in Hosts)
+ {
+  var H=Hosts[i];
+  var r=$.interior.insertRow();
+  r.insertCell().innerHTML='<BR />';
+  r.insertCell().innerHTML=html(H.name);
+ }
 }
 
 // Выделить кусочек текста из исходного кода
@@ -112,7 +126,8 @@ H1	{
 </head><body>
 <H1>Монитор доступности сети</H1>
 
-<Div id='Interior'></Div>
+<Table id='Interior' Border Width='100%' CellSpacing='0'>
+</Table>
 
 </body></html>
 -------------------------------------------------------------------*/
