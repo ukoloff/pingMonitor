@@ -79,6 +79,7 @@ function insertHosts()
   var r=$.interior.insertRow();
   r.insertCell().innerHTML='<BR />';
   r.insertCell().innerHTML=html(H.name);
+  H.tr=r;
  }
 }
 
