@@ -110,12 +110,17 @@ function openLog()
 	F.GetBaseName(WScript.ScriptFullName)+'.log',
 	8, /* ForAppending */
 	true);
- $.Log.WriteLine(new Date().N14()+'\tStarted: '+WScript.ScriptFullName);
+ writeLog('Started: '+WScript.ScriptFullName);
+}
+
+function writeLog(S)
+{
+ $.Log.WriteLine(new Date().N14()+'\t'+S);
 }
 
 function closeLog()
 {
- $.Log.WriteLine(new Date().N14()+'\tStopped: '+WScript.ScriptFullName);
+ writeLog('Stopped: '+WScript.ScriptFullName);
 }
 
 function Number.prototype.N2()
