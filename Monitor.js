@@ -5,7 +5,8 @@
 var Hosts=[
 {ip: '192.168.16.1', name: 'Один'},
 {ip: '192.168.16.2', name: 'Два'},
-{ip: '192.168.16.3', name: 'Три'}
+{ip: '192.168.16.3', name: 'Три'},
+{ip: 'e1.ru', name: 'e1'}
 ];
 
 var $={};
@@ -19,7 +20,8 @@ openLog();
 while(!$.closed)
 {
  pingOut();
- WScript.Sleep(100);
+ showHosts();
+ WScript.Sleep(300);
 }
 
 closeLog()
@@ -173,6 +175,19 @@ function wmiEsc(s)
  return (''+s).replace(/['\\]/g, '\\$&');
 }
 
+function showHosts()
+{
+ if($.closed) return;
+ for(var i in Hosts)
+ {
+  var H=Hosts[i];
+  if(!H.wmi) continue;
+  var c=H.tr.cells[0];
+  c.className=H.wmi.code? 'Red':'Green';
+  if(!H.wmi.code) c.innerHTML=H.wmi.ms;
+ }
+}
+
 function Number.prototype.N2()
 {
  var N=''+this;
@@ -211,6 +226,14 @@ body	{
 
 H1	{
  text-align:	right;
+}
+
+TD.Red	{
+ background: red;
+}
+
+TD.Green {
+ background: green;
 }
 
 </style>
