@@ -16,7 +16,11 @@ startPage();
 
 openLog();
 
-while(!$.closed) WScript.Sleep(100);
+while(!$.closed)
+{
+ pingOut();
+ WScript.Sleep(100);
+}
 
 closeLog()
 
@@ -122,6 +126,51 @@ function writeLog(S)
 function closeLog()
 {
  writeLog('Stopped: '+WScript.ScriptFullName);
+}
+
+var sink_OnObjectReady, sink_OnCompleted, WMI, Sinc;
+
+function pingOut()
+{
+ if(!WMI)WMI=GetObject("winmgmts:");
+ if(!Sinc)Sinc=WScript.CreateObject("WbemScripting.SWbemSink", "sink_");
+
+ if(!sink_OnObjectReady) sink_OnObjectReady=function(Ping, Ctx)
+ {
+  var H=Hosts[Ctx('i')];
+  if((1!=H.stage) || H.wmi) return;
+  H.wmi={
+	code:	Ping.StatusCode,
+	res:	Ping.PrimaryAddressResolutionStatus,
+	ip:	Ping.ProtocolAddress,
+	ms:	Ping.ResponseTime
+  };
+ }
+
+ if(!sink_OnCompleted) sink_OnCompleted=function(hResult, lastError, Ctx)
+ {
+  Hosts[Ctx('i')].stage=2;
+ }
+
+ for(var i in Hosts)
+ {
+  var H=Hosts[i];
+  if(1==H.stage) continue;
+  if(!H.Ctx)
+   (H.Ctx=WScript.CreateObject("WbemScripting.SWbemNamedValueSet")).
+	Add('i', i);
+  H.stage=1;
+  H.wmi=0;
+  WMI.ExecQueryAsync(Sinc,
+	"Select * From Win32_PingStatus Where Timeout=300 "+
+	"And Address='"+wmiEsc(H.ip)+"'",
+	"WQL", 0, null, H.Ctx);
+ } 
+}
+
+function wmiEsc(s)
+{
+ return (''+s).replace(/['\\]/g, '\\$&');
 }
 
 function Number.prototype.N2()
